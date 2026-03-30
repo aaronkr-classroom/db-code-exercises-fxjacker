@@ -1,0 +1,69 @@
+# 게임 유저 관리 시스템 DB 설계
+
+## 1. 시스템 선택
+- 3. 게임 유저 관리 (Game User Management)
+
+## 2. 요구사항 (5개 이상)
+1. 게임에 가입한 **유저(User)** 정보를 관리해야 한다.
+2. 유저가 보유한 **아이템(Item)** 정보를 관리해야 한다.
+3. 유저는 고유한 닉네임, 레벨, 경험치, 생성일을 가진다.
+4. 아이템은 아이템 이름, 유형(무기/방어구 등), 공격력/방어력 수치를 가진다.
+5. 현재 레벨이 20 이상인 고레벨 유저들을 검색할 수 있어야 한다.
+6. 등록된 아이템들을 공격력이 높은 순서대로 정렬하여 조회할 수 있어야 한다.
+
+## 3. 데이터 설계 (엔티티 및 속성)
+1. **GameUser (유저)**
+   - id: 일련번호 (PK, SERIAL)
+   - nickname: 닉네임 (TEXT, UNIQUE)
+   - level: 레벨 (INT)
+   - created_at: 계정 생성일 (DATE)
+2. **GameItem (아이템)**
+   - id: 일련번호 (PK, SERIAL)
+   - item_name: 아이템 이름 (TEXT)
+   - item_type: 유형 (TEXT)
+   - power: 전투력 수치 (INT)
+
+-- 1. 테이블 생성 (CREATE TABLE)
+-- 이미지 3번 가이드에 따라 SERIAL과 TEXT 타입을 우선 사용했습니다.
+
+CREATE TABLE game_user (
+    id SERIAL PRIMARY KEY,
+    nickname TEXT NOT NULL UNIQUE,
+    level INT DEFAULT 1,
+    created_at DATE DEFAULT '2026-03-30'
+);
+
+CREATE TABLE game_item (
+    id SERIAL PRIMARY KEY,
+    item_name TEXT NOT NULL,
+    item_type TEXT,
+    power INT
+);
+
+-- 2. 데이터 삽입 (INSERT INTO)
+-- 사용자 2명 이상 및 아이템 데이터 삽입
+
+INSERT INTO game_user (nickname, level, created_at) VALUES 
+('드래곤슬레이어', 25, '2026-01-10'),
+('초보모험가', 5, '2026-03-25'),
+('대마법사', 42, '2025-12-05');
+
+INSERT INTO game_item (item_name, item_type, power) VALUES 
+('엑스칼리버', '무기', 150),
+('강철 방패', '방어구', 80),
+('나무 지팡이', '무기', 20),
+('드래곤 갑옷', '방어구', 200);
+
+-- 3. 데이터 조회 (SELECT / WHERE / ORDER BY)
+
+-- 요구사항: 레벨이 20 이상인 유저 닉네임과 레벨 조회
+SELECT nickname, level FROM game_user 
+WHERE level >= 20;
+
+-- 요구사항: 아이템을 전투력(power)이 높은 순으로 정렬
+SELECT * FROM game_item 
+ORDER BY power DESC;
+
+-- 요구사항: 특정 닉네임('드래곤슬레이어')의 상세 정보 조회
+SELECT * FROM game_user 
+WHERE nickname = '드래곤슬레이어';
